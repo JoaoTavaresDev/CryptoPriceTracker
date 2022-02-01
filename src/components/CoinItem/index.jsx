@@ -1,6 +1,6 @@
 import { Text, View, Image } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import styles from "./style";
+import styles from "./styles";
 import React from "react";
 
 const CoinItem = ({ marketCoin }) => {
@@ -13,6 +13,25 @@ const CoinItem = ({ marketCoin }) => {
     price_change_percentage_24h,
     market_cap,
   } = marketCoin;
+
+  const percentageColor =
+    price_change_percentage_24h < 0 ? "#ea3943" : "#16c784";
+
+  const normalizeMarketCap = (marketCap) => {
+    if (marketCap >= 1000000000000) {
+      return `${Math.floor(marketCap / 1000000000000)} T`;
+    }
+    if (marketCap >= 1000000000) {
+      return `${Math.floor(marketCap / 1000000000)} B`;
+    }
+    if (marketCap >= 1000000) {
+      return `${Math.floor(marketCap / 1000000)} M`;
+    }
+    if (marketCap >= 1000) {
+      return `${Math.floor(marketCap / 1000)} k`;
+    }
+    return marketCap;
+  };
 
   return (
     <View style={styles.coinContainer}>
@@ -33,19 +52,21 @@ const CoinItem = ({ marketCoin }) => {
           <Text style={styles.rank}>{market_cap_rank}</Text>
           <Text style={styles.text}>{symbol.toUpperCase()}</Text>
           <AntDesign
-            name="caretdown"
+            name={price_change_percentage_24h < 0 ? "caretdown" : "caretup"}
             size={14}
-            color="white"
+            color={percentageColor}
             style={{ alignSelf: "center", marginRight: 5 }}
           />
-          <Text style={styles.text}>
+          <Text style={{ color: percentageColor }}>
             {price_change_percentage_24h.toFixed(2)}%
           </Text>
         </View>
       </View>
-      <View style={{ marginLeft: "auto" }}>
+      <View style={{ marginLeft: "auto", alignItems: "flex-end" }}>
         <Text style={styles.title}>{current_price}</Text>
-        <Text style={styles.text}>MCap {market_cap} T</Text>
+        <Text style={{ color: "white" }}>
+          MCap {normalizeMarketCap(market_cap)}
+        </Text>
       </View>
     </View>
   );
